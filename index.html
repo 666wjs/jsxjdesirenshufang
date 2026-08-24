@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>未命名书房 — 个人站点</title>
+  <meta name="description" content="一个安静、结构清晰的个人思考空间。">
+  <style>
+    /* ---------------------------------------------------------------
+       设计原则：沉静、克制，结构清晰，无多余动效。
+       借鉴了参考图的分层与细腻，但保留书房的暖调与朴素：
+       衬线标题 + 无衬线元信息，纸白底色，书脊棕点缀。
+       两侧的小装饰只在宽屏（≥1280px）显示，不打扰正文阅读。
+    --------------------------------------------------------------- */
+    :root {
+      --paper:      #faf9f6;   /* 纸白 */
+      --paper-deep: #f3f0ea;   /* 略深的纸色，用于卡片底 */
+      --ink:        #2b2824;   /* 墨色 */
+      --soft:       #56504a;   /* 正文次级色 */
+      --muted:      #948d82;   /* 元信息灰 */
+      --line:       #e3ddd2;   /* 细线 */
+      --accent:     #7d5a38;   /* 书脊棕，少量点缀 */
+      --sans: -apple-system, BlinkMacSystemFont, "PingFang SC",
+              "Microsoft YaHei", "Segoe UI", sans-serif;
+      --serif: Georgia, "Times New Roman", "Noto Serif SC",
+               "Source Han Serif SC", "Songti SC", "SimSun", serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: auto; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 17px;
+      line-height: 1.85;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    /* ---------- 顶部导航：磨砂玻璃，常驻顶栏 ---------- */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(250, 249, 246, 0.86);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(227, 221, 210, 0.9);
+    }
+
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px 24px;
+      padding-top: 18px;
+      padding-bottom: 18px;
+    }
+
+    .brand {
+      font-size: 19px;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: .05em;
+    }
+
+    .brand .dot { color: var(--accent); }
+
+    .badge {
+      font-family: var(--sans);
+      font-size: 11px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 2px 10px;
+      margin-left: 8px;
+      letter-spacing: .12em;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 26px;
+      font-family: var(--sans);
+    }
+
+    .nav a {
+      color: var(--soft);
+      text-decoration: none;
+      font-size: 14px;
+      letter-spacing: .06em;
+      padding: 4px 2px;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ---------- 顶部横幅：壁纸背景 + 渐变过渡到纸色 ---------- */
+    .hero {
+      position: relative;
+      min-height: 74vh;
+      display: flex;
+      align-items: center;
+      background-image: url("hero-bg.jpg");
+      background-size: cover;
+      background-position: center 58%;
+      color: #fff;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(24, 18, 26, 0.42) 0%,
+        rgba(24, 18, 26, 0.14) 52%,
+        var(--paper) 96%
+      );
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 96px 28px 120px;
+    }
+
+    .hero-overline {
+      font-family: var(--sans);
+      font-size: 13px;
+      letter-spacing: .28em;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: 40px;
+      font-weight: 600;
+      line-height: 1.35;
+      letter-spacing: .02em;
+      margin-bottom: 22px;
+      text-shadow: 0 1px 24px rgba(20, 14, 22, 0.35);
+    }
+
+    .hero-text {
+      max-width: 32em;
+      color: rgba(255, 255, 255, 0.92);
+      text-shadow: 0 1px 16px rgba(20, 14, 22, 0.4);
+    }
+
+    .hero-meta {
+      margin-top: 34px;
+      font-family: var(--sans);
+      font-size: 12px;
+      letter-spacing: .18em;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    /* ---------- 板块通用 ---------- */
+    .section {
+      padding: 76px 0 8px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 12px;
+    }
+
+    /* 模块图标：标题右侧固定的小图，透明底，只保留人物 */
+    .section-icon {
+      height: 80px;
+      width: auto;
+      margin-left: auto;
+      object-fit: contain;
+    }
+
+    .section-icon-mid { height: 128px; }
+
+    .section-icon-lg { height: 130px; }
+
+    .section-index {
+      font-family: var(--sans);
+      font-size: 13px;
+      letter-spacing: .1em;
+      color: var(--accent);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 1px 12px;
+      white-space: nowrap;
+    }
+
+    .section h2 {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: .02em;
+    }
+
+    .section-note {
+      color: var(--muted);
+      font-size: 15px;
+      margin: 0 0 30px;
+      padding-left: 1px;
+    }
+
+    /* 待填充占位块：模板阶段用，填好内容后删除 */
+    .placeholder {
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      background: var(--paper-deep);
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    /* ---------- 卡片：安静、无放大动效，仅 hover 时线色变化 ---------- */
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper-deep);
+      padding: 22px 26px;
+      margin-bottom: 14px;
+    }
+
+    .card:hover { border-color: var(--accent); }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .card-sub {
+      color: var(--muted);
+      font-size: 14px;
+      font-family: var(--sans);
+      letter-spacing: .04em;
+    }
+
+    .card-note {
+      margin-top: 10px;
+      color: var(--soft);
+      font-size: 15px;
+    }
+
+    /* ---------- 联系 ---------- */
+    .threshold {
+      border-left: 3px solid var(--accent);
+      background: var(--paper-deep);
+      border-radius: 0 12px 12px 0;
+      padding: 18px 24px;
+      margin-bottom: 26px;
+      color: var(--soft);
+    }
+
+    .contact-line {
+      margin-bottom: 12px;
+      font-family: var(--sans);
+      font-size: 15px;
+    }
+
+    .contact-line a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .contact-line a:hover { border-bottom-color: var(--accent); }
+
+    .btn-mail {
+      display: inline-block;
+      margin-top: 6px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 9px 24px;
+      text-decoration: none;
+      font-family: var(--sans);
+      font-size: 14px;
+      letter-spacing: .08em;
+    }
+
+    .btn-mail:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* ---------- 页脚横幅：底部壁纸背景 ---------- */
+    .bottom-hero {
+      position: relative;
+      margin-top: 80px;
+      min-height: 68vh;
+      display: flex;
+      align-items: flex-end;
+      background-image: url("assets/bottom-bg.jpg");
+      background-size: cover;
+      background-position: center 50%;
+      color: #fff;
+    }
+
+    .bottom-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        var(--paper) 0%,
+        rgba(26, 20, 18, 0.10) 16%,
+        rgba(26, 20, 18, 0.52) 55%,
+        rgba(26, 20, 18, 0.74) 100%
+      );
+    }
+
+    .bottom-inner {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      padding-top: 100px;
+      padding-bottom: 56px;
+    }
+
+    .bottom-overline {
+      font-family: var(--sans);
+      font-size: 13px;
+      letter-spacing: .28em;
+      color: rgba(255, 255, 255, 0.78);
+      margin-bottom: 14px;
+    }
+
+    .bottom-title {
+      font-size: 30px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      margin-bottom: 12px;
+      text-shadow: 0 1px 20px rgba(20, 14, 12, 0.4);
+    }
+
+    .bottom-text {
+      max-width: 30em;
+      color: rgba(255, 255, 255, 0.86);
+      margin-bottom: 22px;
+    }
+
+    .bottom-meta {
+      font-family: var(--sans);
+      font-size: 13px;
+      letter-spacing: .08em;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .bottom-meta a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .bottom-meta a:hover {
+      border-bottom-color: #fff;
+    }
+
+    /* ---------- 窄屏 ---------- */
+    @media (max-width: 560px) {
+      body { font-size: 16px; }
+      .container { padding: 0 20px; }
+      .site-header .container { padding-top: 14px; padding-bottom: 14px; }
+      .hero { min-height: 62vh; }
+      .hero-inner { padding: 72px 20px 96px; }
+      .hero h1 { font-size: 28px; }
+      .hero-overline { letter-spacing: .2em; }
+      .section { padding: 56px 0 0; }
+      .section h2 { font-size: 22px; }
+      .section-head { gap: 12px; }
+      .card { padding: 18px 20px; }
+      .bottom-hero { min-height: 52vh; }
+      .bottom-inner { padding-top: 72px; padding-bottom: 40px; }
+      .bottom-title { font-size: 24px; }
+      .section-icon { height: 60px; }
+      .section-icon-mid { height: 92px; }
+      .section-icon-lg { height: 96px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= 顶部导航 ================= -->
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="#top">未命名书房<span class="dot">.</span><span class="badge">模板 v0.4</span></a>
+      <nav class="nav">
+        <a href="#about">个人介绍</a>
+        <a href="#strengths">个人优势</a>
+        <a href="#thinking">思考集</a>
+        <a href="#library">图书馆</a>
+        <a href="#contact">联系本人</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ================= 顶部横幅（壁纸背景） ================= -->
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <p class="hero-overline">这里不是简历，也不是广告牌</p>
+      <h1>一个用来思考的地方。</h1>
+      <p class="hero-text">
+        这个网站记录我如何拆解问题、受哪些人和书影响，以及我还不知道什么。
+        如果你愿意认真阅读，这里就值得停留。
+      </p>
+      <p class="hero-meta">EST. 2026 · 内容陆续整理中</p>
+    </div>
+  </section>
+
+  <main class="container">
+
+    <!-- ================= 一、个人介绍 ================= -->
+    <section class="section" id="about">
+      <div class="section-head">
+        <span class="section-index">01</span>
+        <h2>个人介绍</h2>
+        <img class="section-icon" src="assets/asuka.png" alt="">
+      </div>
+      <p class="section-note">不写履历清单，写三件更诚实的事。</p>
+
+      <div id="about-blocks">
+        <div class="placeholder">待填充 —— 我在做什么、我关心什么问题。</div>
+        <div class="placeholder">待填充 —— 此刻我不确定、仍在思考的事。</div>
+      </div>
+      <!-- 正文在 content.js 里编辑，勿改这里的结构 -->
+    </section>
+
+    <!-- ================= 二、个人优势 ================= -->
+    <section class="section" id="strengths">
+      <div class="section-head">
+        <span class="section-index">02</span>
+        <h2>个人优势</h2>
+        <img class="section-icon section-icon-mid" src="assets/module4.png" alt="">
+      </div>
+      <p class="section-note">不写成自我吹嘘的清单，而是说明我的工作方式与边界。</p>
+
+      <div id="strengths-blocks">
+        <div class="placeholder">待填充 —— 我如何拆解复杂问题。</div>
+        <div class="placeholder">待填充 —— 我擅长什么、不擅长什么。</div>
+        <div class="placeholder">待填充 —— 我如何发现自己错了。</div>
+      </div>
+    </section>
+
+    <!-- ================= 三、思考集 ================= -->
+    <section class="section" id="thinking">
+      <div class="section-head">
+        <span class="section-index">03</span>
+        <h2>思考集</h2>
+        <img class="section-icon" src="assets/candle.svg" alt="">
+      </div>
+      <p class="section-note">按主题与日期排列；未完成的思考也会放上来。</p>
+
+      <div id="thinking-list">
+        <article class="card">
+          <div class="card-title">文章标题占位</div>
+          <div class="card-sub">草稿 · 2026-08</div>
+          <p class="card-note">一句话摘要待填充。</p>
+        </article>
+        <article class="card">
+          <div class="card-title">文章标题占位</div>
+          <div class="card-sub">草稿 · 2026-08</div>
+          <p class="card-note">一句话摘要待填充。</p>
+        </article>
+        <article class="card">
+          <div class="card-title">文章标题占位</div>
+          <div class="card-sub">草稿 · 2026-08</div>
+          <p class="card-note">一句话摘要待填充。</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= 四、图书馆 ================= -->
+    <section class="section" id="library">
+      <div class="section-head">
+        <span class="section-index">04</span>
+        <h2>图书馆</h2>
+        <img class="section-icon" src="assets/books.svg" alt="">
+      </div>
+      <p class="section-note">深刻影响我的书与作者，附上「它如何影响我的思考」。</p>
+
+      <div id="library-list">
+        <article class="card">
+          <div class="card-title">书名占位</div>
+          <div class="card-sub">作者 · 年份</div>
+          <p class="card-note">影响简述待填充。</p>
+        </article>
+        <article class="card">
+          <div class="card-title">书名占位</div>
+          <div class="card-sub">作者 · 年份</div>
+          <p class="card-note">影响简述待填充。</p>
+        </article>
+        <article class="card">
+          <div class="card-title">书名占位</div>
+          <div class="card-sub">作者 · 年份</div>
+          <p class="card-note">影响简述待填充。</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= 五、联系本人 ================= -->
+    <section class="section" id="contact">
+      <div class="section-head">
+        <span class="section-index">05</span>
+        <h2>联系本人</h2>
+        <img class="section-icon section-icon-lg" src="assets/module5.png" alt="">
+      </div>
+
+      <p class="threshold" id="contact-threshold">
+        如果你愿意就某个具体问题认真讨论，欢迎来信。请在邮件里说明三件事：
+        你关心的问题、你已有的看法、你想讨论的方向。泛泛的问候恕不回复。
+      </p>
+
+      <p class="contact-line">邮箱：<a href="mailto:" id="contact-email">待填充</a></p>
+      <p class="contact-line" id="contact-others">其他渠道：待填充</p>
+      <a class="btn-mail" href="mailto:" id="contact-btn">写信给我</a>
+    </section>
+
+  </main>
+
+  <!-- ================= 页脚横幅（底部壁纸背景） ================= -->
+  <section class="bottom-hero" id="end">
+    <div class="bottom-inner container">
+      <p class="bottom-overline">如果你读到这里</p>
+      <h2 class="bottom-title">欢迎带着问题来信。</h2>
+      <p class="bottom-text">
+        无广告 · 无追踪 · 无营销话术。本站保持朴素，把注意力留给内容。
+      </p>
+      <p class="bottom-meta">
+        © 2026 · 当前为模板阶段，正文待填充 ·
+        <a href="#top">回到顶部</a> · <a href="#contact">联系本人</a>
+      </p>
+    </div>
+  </section>
+
+  <script src="content.js"></script>
+  <script>
+    (function () {
+      var C = window.SITE_CONTENT;
+      if (!C) return; // 找不到内容文件时保留页面上的默认占位文字
+
+      function fillBlocks(id, items) {
+        var box = document.getElementById(id);
+        if (!box || !Array.isArray(items)) return;
+        box.innerHTML = "";
+        items.forEach(function (text) {
+          var d = document.createElement("div");
+          d.className = "placeholder";
+          d.textContent = text;
+          box.appendChild(d);
+        });
+      }
+
+      function fillCards(id, items, subFn) {
+        var box = document.getElementById(id);
+        if (!box || !Array.isArray(items)) return;
+        box.innerHTML = "";
+        items.forEach(function (it) {
+          var card = document.createElement("article");
+          card.className = "card";
+          var t = document.createElement("div");
+          t.className = "card-title";
+          t.textContent = it.title || "";
+          var s = document.createElement("div");
+          s.className = "card-sub";
+          s.textContent = subFn ? subFn(it) : "";
+          var n = document.createElement("p");
+          n.className = "card-note";
+          n.textContent = it.note || it.summary || "";
+          card.appendChild(t); card.appendChild(s); card.appendChild(n);
+          box.appendChild(card);
+        });
+      }
+
+      fillBlocks("about-blocks", C.about);
+      fillBlocks("strengths-blocks", C.strengths);
+      fillCards("thinking-list", C.thinking, function (it) {
+        return [it.status, it.date].filter(Boolean).join(" · ");
+      });
+      fillCards("library-list", C.library, function (it) {
+        return [it.author, it.year].filter(Boolean).join(" · ");
+      });
+
+      if (C.contact) {
+        var th = document.getElementById("contact-threshold");
+        if (th && C.contact.threshold) th.textContent = C.contact.threshold;
+        var addr = C.contact.email || "";
+        var em = document.getElementById("contact-email");
+        var btn = document.getElementById("contact-btn");
+        if (em) { em.textContent = addr || "待填充"; em.href = addr ? "mailto:" + addr : "mailto:"; }
+        if (btn) btn.href = addr ? "mailto:" + addr : "mailto:";
+        var ot = document.getElementById("contact-others");
+        if (ot && C.contact.others) ot.textContent = C.contact.others;
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# 不发布到网上的本地临时文件
+assets/tmp/
+assets/cloud.svg
+assets/asuka.jpg
